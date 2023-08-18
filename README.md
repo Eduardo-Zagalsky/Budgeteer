@@ -1,3 +1,8 @@
+I will be using plaid which needed to be installed from *npm* and will be used to create a bunch of fake customer data for the budget app
+
+The Schema will consist of a few different tables for users and accounts, they will be linked but seperate tables.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
