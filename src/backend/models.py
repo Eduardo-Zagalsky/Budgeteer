@@ -14,7 +14,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.Text, nullable=False)
+    full_name = db.Column(db.Text, nullable=False)
     username = db.Column(db.Text, nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
 
@@ -45,3 +45,12 @@ class User(db.Model):
             return u
         else:
             return False
+
+class Accounts(db.Model):
+    __tablename__="accounts"
+
+    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
+    accountName=db.Column(db.String(),nullable=False)
+    balance=db.Column(db.Float(),nullable=False)
+    ownerId=db.Column(db.Integer(),db.ForeignKey('users.id'))
+    
