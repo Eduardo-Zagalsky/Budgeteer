@@ -12,3 +12,8 @@ app.config['SECRET_KEY'] = "secret"
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+
+
+@app.route('/')
+def root():
+    return render_template('index.html')
