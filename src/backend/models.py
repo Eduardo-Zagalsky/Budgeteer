@@ -17,6 +17,12 @@ class User(db.Model):
     full_name = db.Column(db.Text, nullable=False)
     username = db.Column(db.Text, nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
+    income = db.Column(db.Float)
+    credit_score = db.Column(db.Integer)
+    balance = db.Column(db.Float)
+    debt = db.column(db.Float)
+    equity = db.Column(db.Float)
+    expenses = db.Column(db.Float)
 
     @classmethod
     def register(cls, username, pwd):
@@ -46,11 +52,22 @@ class User(db.Model):
         else:
             return False
 
-class Accounts(db.Model):
-    __tablename__="accounts"
 
-    id=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    accountName=db.Column(db.String(),nullable=False)
-    balance=db.Column(db.Float(),nullable=False)
-    ownerId=db.Column(db.Integer(),db.ForeignKey('users.id'))
-    
+class Accounts(db.Model):
+    __tablename__ = "accounts"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    accountName = db.Column(db.Text, nullable=False)
+    balance = db.Column(db.Float, nullable=False)
+    ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+class Credit(db.Model):
+    __tablename__ = 'credit'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    creditor = db.Column(db.Text)
+    type = db.Column(db.Text)
+    balance = db.Column(db.Float)
+    limit = db.Column(db.Float)
+    ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
