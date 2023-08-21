@@ -1,1 +1,5 @@
-// create a budget
+const Budget = (props) => {
+    return (
+        <p></p>
+    )
+}
