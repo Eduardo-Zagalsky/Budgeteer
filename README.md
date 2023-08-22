@@ -1,6 +1,6 @@
 I will be using plaid which needed to be installed from *npm* and will be used to create a bunch of fake customer data for the budget app
 
-The Schema will consist of a few different tables for users and accounts, they will be linked but seperate tables.
+The Schema will consist of a few different tables for users, accounts, credit, and expenses. They will be linked but seperate tables.
 
 
 # Getting Started with Create React App
