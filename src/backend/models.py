@@ -19,10 +19,9 @@ class User(db.Model):
     password = db.Column(db.Text, nullable=False)
     income = db.Column(db.Float)
     credit_score = db.Column(db.Integer)
-    balance = db.Column(db.Float)
-    debt = db.column(db.Float)
-    equity = db.Column(db.Float)
-    expenses = db.Column(db.Float)
+    credit = db.relationship('Credit')
+    account = db.relationship('Accounts')
+    expense = db.relationship('Expenses')
 
     @classmethod
     def register(cls, username, pwd):
@@ -70,4 +69,18 @@ class Credit(db.Model):
     type = db.Column(db.Text)
     balance = db.Column(db.Float)
     limit = db.Column(db.Float)
+    interestRate = db.Column(db.Float)
+    due_date = db.Column(db.Integer)
     ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+class Expenses(db.Model):
+    __tablename__ = 'expenses'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    expenseType = db.Column(db.String())
+    amount = db.Column(db.Float(), nullable=False)
+    description = db.Column(db.String())
+    date = db.Column(db.Date())
+    ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User')
