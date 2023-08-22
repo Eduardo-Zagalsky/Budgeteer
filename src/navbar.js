@@ -10,6 +10,8 @@ const NavBar = () => {
             <NavLink className="nav-link" to="/login">Log In</NavLink>
             <NavLink className="nav-link" to="/logout">Sign out</NavLink>
             <NavLink className="nav-link" to="/budget">Budget</NavLink>
+            <NavLink className="nav-link" to="/credit">Credit</NavLink>
+            <NavLink className="nav-link" to="/savings">Savings</NavLink>
         </nav>
     );
 }
