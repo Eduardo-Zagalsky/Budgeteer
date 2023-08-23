@@ -1,14 +1,12 @@
 const plaid = require("plaid");
 const moment = require("moment");
 const axios = require("axios");
+const { PLAID_CLIENT_ID, PLAID_SECRET } = require("./keys")
 
 async function getPublicKey() {
     let result = await axios.get("/sandbox/public_token/create");
     return result["public_token"];
 }
-
-const PLAID_CLIENT_ID = "64dc44131c296d0017d5d0a9";
-const PLAID_SECRET = "afdb4534a7529f1647199393d8b08c";
 const PLAID_PUBLIC_KEY = getPublicKey();
 const PLAID_ENV = "sandbox";
 
