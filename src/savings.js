@@ -1,12 +1,18 @@
-const Savings = (props) => {
+const Savings = () => {
+    // hardcoded time, balance, apy
+    let num = 10000;
+    let balance = num.toLocaleString();
+    let apy = 4.25;
+    let formula = 72 / apy;
+    let time = Math.ceil(formula);
     return (
         <div>
             <h1>Savings/Investments</h1>
-            <p>this is a very important tab because it will teach you the necessary steps to be financially independent</p>
+            <h4>This is a very important tab, because it will teach you how to be financially independent</h4>
             <h3>Savings Accounts</h3>
             <p>the most important thing you need to know about a savings account is <b>THE RULE OF 72</b>, basically the idea is that if you divide
                 72 by the interest rate or APY percentage it'll tell you how long it will take for your money to double</p>
-            <p>your current balance of {balance} would take {time} to double at the interest rate of {apy}</p>
+            <p>your current balance of ${balance} would take {time} to double at the interest rate of {apy}%</p>
             <hr />
             <h3>Investment Accounts</h3>
             <p>Thought it is always better to talk to a investment banker about any investment decisions, currently the market is flooded with do it
@@ -21,7 +27,7 @@ const Savings = (props) => {
                 comes with matching contributions and higher contribution limits, but when you leave you might forget it or they might make it difficult to
                 take it with you. An IRA on the other hand has a lower contribution limit but has a lot more flexibility and investment options, as well as
                 having the ROTH option.
-                <b>ROTH IRA:</b> This is an after-tax retirement account, unlike 401k and traditional IRA, this means that you invest into this account
+                <b> ROTH IRA: </b>This is an after-tax retirement account, unlike 401k and traditional IRA, this means that you invest into this account
                 having already paid the taxes and allowing you to grow your investments <b>tax-free</b> this means, let's say you deposit 1,000 dollars now
                 you pay your taxes on that money upfront and then you invest that money and watch it grow exponentially, when you're over 59.5 years old
                 you'll be able to start withdrawing from that money tax-free having paid taxes on 1,000 dollars now you can withdraw your 1 million and pay
@@ -30,3 +36,4 @@ const Savings = (props) => {
         </div>
     )
 }
+export default Savings;
