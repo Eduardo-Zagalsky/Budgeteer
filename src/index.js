@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route } from 'react-router-dom';
 import NavBar from './navbar';
 import Home from './home';
-import Setup from './setup';
+import Credit from './credit';
+import Savings from './savings';
+import Budget from './budget';
 import "./style.css";
 
 const App = () => (
@@ -12,8 +14,14 @@ const App = () => (
     <Route exact path='/'>
       <Home />
     </Route>
-    <Route exact path='/link-plaid'>
-      <Setup />
+    <Route exact path='/credit'>
+      <Credit />
+    </Route>
+    <Route exact path='/savings'>
+      <Savings />
+    </Route>
+    <Route exact path='/budget'>
+      <Budget />
     </Route>
   </BrowserRouter>
 )
