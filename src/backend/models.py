@@ -15,6 +15,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     full_name = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, nullable=False)
     username = db.Column(db.Text, nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
     income = db.Column(db.Float)
@@ -24,7 +25,11 @@ class User(db.Model):
     expense = db.relationship('Expenses')
 
     @classmethod
-    def register(cls, username, pwd):
+    def hash(cls, pwd):
+        return bcrypt.generate_password_hash(pwd).decode("utf-8")
+
+    @classmethod
+    def register(cls, name, email, username, pwd):
         """Register user w/hashed password & return user."""
 
         hashed = bcrypt.generate_password_hash(pwd)
@@ -33,7 +38,7 @@ class User(db.Model):
         hashed_utf8 = hashed.decode("utf8")
 
         # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8)
+        return cls(username=username, password=hashed_utf8, name=name, email=email)
 
     @classmethod
     def authenticate(cls, username, pwd):
@@ -56,7 +61,8 @@ class Accounts(db.Model):
     __tablename__ = "accounts"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    accountName = db.Column(db.Text, nullable=False)
+    name = db.Column(db.Text, nullable=False)
+    type = db.Column(db.Text, nullable=False)
     balance = db.Column(db.Float, nullable=False)
     ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -65,12 +71,12 @@ class Credit(db.Model):
     __tablename__ = 'credit'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    creditor = db.Column(db.Text)
-    type = db.Column(db.Text)
-    balance = db.Column(db.Float)
+    creditor = db.Column(db.Text, nullable=False)
+    type = db.Column(db.Text, nullable=False)
+    balance = db.Column(db.Float, nullable=False)
     limit = db.Column(db.Float)
-    interestRate = db.Column(db.Float)
-    due_date = db.Column(db.Integer)
+    interest_rate = db.Column(db.Float, nullable=False)
+    due_date = db.Column(db.Integer, nullable=False)
     ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
@@ -78,9 +84,9 @@ class Expenses(db.Model):
     __tablename__ = 'expenses'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    expenseType = db.Column(db.String())
-    amount = db.Column(db.Float(), nullable=False)
-    description = db.Column(db.String())
-    date = db.Column(db.Date())
+    name = db.Column(db.Text, nullable=False)
+    expenseType = db.Column(db.Text)
+    amount = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text)
+    date = db.Column(db.Date, nullable=False)
     ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User')
