@@ -1,0 +1,22 @@
+{% extends 'index.html' %}
+{% block content %}
+<form id="account-form" method="post">
+    {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != 'hidden' %}
+    <p>
+        {{field.label}}
+        {{field (class_="form-control")}}
+    </p>
+    {% for error in field.errors %}
+    {{error}}
+    {% endfor %}
+    {% endfor %}
+    <button class="btn btn-primary" type="submit">Add</button>
+    <a href="/account-form">
+        <button class="btn btn-secondary" type="submit">Add & Another</button>
+    </a>
+    <a href="/credit-form">
+        <button class="btn btn-danger">Skip</button>
+    </a>
+</form>
+{% endblock %}
