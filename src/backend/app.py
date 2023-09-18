@@ -17,7 +17,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = AddUserForm()
     if form.validate_on_submit():
