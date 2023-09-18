@@ -6,6 +6,7 @@ import Home from './home';
 import Credit from './credit';
 import Savings from './savings';
 import Budget from './budget';
+import Register from './register';
 import "./style.css";
 
 const App = () => (
@@ -22,6 +23,9 @@ const App = () => (
     </Route>
     <Route exact path='/budget'>
       <Budget />
+    </Route>
+    <Route exact path='/register'>
+      <Register />
     </Route>
   </BrowserRouter>
 )
