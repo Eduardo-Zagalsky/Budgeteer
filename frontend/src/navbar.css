@@ -1,0 +1,22 @@
+nav {
+    background-color: darkgreen;
+    color: white;
+}
+
+#title {
+    display: inline-block;
+    font-size: 3rem;
+    margin-left: 10px;
+    margin-right: 150px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.nav-link {
+    margin: 5px;
+    color: white;
+    display: inline;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1rem;
+
+}
