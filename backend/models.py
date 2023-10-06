@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from secret import ALGORITHMS, SECRET_KEY
+import jwt
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -55,6 +57,14 @@ class User(db.Model):
             return u
         else:
             return False
+
+    def encode_auth_token(self, user_id):
+        try:
+            u = User.query.filter_by(id=user_id).first()
+            payload = {'userId': u.id, 'name': u.name, 'username': u.username}
+            return jwt.encode(payload, SECRET_KEY, algorithm=[ALGORITHMS])
+        except Exception as e:
+            return e
 
 
 class Accounts(db.Model):
