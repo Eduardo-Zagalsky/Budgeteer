@@ -1,10 +1,9 @@
 import axios from "axios"
 import { useState } from "react"
-const jwt = require("jsonwebtoken");
-
-const INITIAL_VAL = { name: "", email: "", username: "", password: "", income: "", creditScore: "" }
+const local = require("localStorage")
 const URL = process.env.FULL_URL;
-const SECRET_KEY = process.env.SECRET_KEY;
+const INITIAL_VAL = { name: "", email: "", username: "", password: "", income: "", creditScore: "" }
+
 const Register = () => {
     const [formData, setFormData] = useState(INITIAL_VAL);
     const handleChange = (e) => {
@@ -13,9 +12,8 @@ const Register = () => {
     }
     const handleSubmit = async (e) => {
         e.preventDefault();
-        let token = jwt.sign(formData, SECRET_KEY);
-        const data = await axios.post(`${URL}/signup`, { token });
-        return data.json();
+        const token = await axios.post(`${URL}/signup`, { formData });
+        local.setItem("token", token);
     }
 
     return (
