@@ -23,9 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 /venv
 
-# frontend
-/frontend/node_modules
-# backend
-/backend/venv
-/backend/__pycache__
-/backend/secret.py
+/venv
+__pycache__
+secret.py
