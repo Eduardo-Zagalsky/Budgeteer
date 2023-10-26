@@ -1,7 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from secret import ALGORITHMS, SECRET_KEY
 import jwt
+import os
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHMS = 'HS256'
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()

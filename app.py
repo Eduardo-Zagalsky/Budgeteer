@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 from models import db, connect_db, User, Accounts, Credit, Expenses
 import jwt
 import os
-SECRET_KEY=os.getenv('SECRET_KEY')
-ALGORITHMS='HS256'
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHMS = 'HS256'
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///budgeteer'
