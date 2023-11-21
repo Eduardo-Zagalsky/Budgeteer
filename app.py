@@ -2,13 +2,16 @@ from flask import Flask, request, jsonify
 from models import db, connect_db, User, Accounts, Credit, Expenses
 import jwt
 import os
+from flask_cors import CORS
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHMS = 'HS256'
 app = Flask(__name__)
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///budgeteer'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['CORS_ORIGIN_ALLOW_ALL'] = True
 app.config['SECRET_KEY'] = SECRET_KEY
 
 connect_db(app)
@@ -115,5 +118,20 @@ def expense():
                            description=description, date=date, ownerId=current_user)
         db.session.add(expense)
         db.session.commit()
+    else:
+        return jsonify(403, "Sorry, you are not logged in")
+
+
+@app.route('/credit', methods=['GET'])
+def credit():
+    token = request.headers.get('token')
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
+        current_user = User.query.filter_by(data["userId"]).one()
+    except Exception as e:
+        return e
+    if current_user:
+        credit = Credit.query.filter_by(ownerId=data['userId']).all()
+        return jsonify(credit)
     else:
         return jsonify(403, "Sorry, you are not logged in")
