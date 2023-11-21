@@ -86,9 +86,9 @@ class Credit(db.Model):
     creditor = db.Column(db.Text, nullable=False)
     type = db.Column(db.Text, nullable=False)
     balance = db.Column(db.Float, nullable=False)
-    limit = db.Column(db.Float)
+    limit = db.Column(db.Float, nullable=False)
     interest_rate = db.Column(db.Float, nullable=False)
-    due_date = db.Column(db.Integer, nullable=False)
+    due_date = db.Column(db.Date, nullable=False)
     ownerId = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
