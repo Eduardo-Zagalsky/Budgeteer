@@ -19,7 +19,7 @@ connect_db(app)
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    data = request.form[data]
+    data = request.form['data']
     name = data.name
     email = data.email
     username = data.username
@@ -45,7 +45,7 @@ def signup():
 
 @app.route('/logon', methods=['POST'])
 def login():
-    data = request.form[data]
+    data = request.form['data']
     username = data.username
     password = data.password
     user = User.authenticate(username, password)
