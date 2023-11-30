@@ -55,7 +55,7 @@ def login():
 
 
 @app.route('/account-form', methods=['POST'])
-def account():
+def account_form():
     token = request.headers.get('token')
     result = request.form['data']
     name = result.name
@@ -76,7 +76,7 @@ def account():
 
 
 @app.route('/credit-form', methods=['POST'])
-def credit():
+def credit_form():
     token = request.headers.get('token')
     result = request.form['data']
     creditor = result.creditor
@@ -100,7 +100,7 @@ def credit():
 
 
 @app.route('/expense-form', methods=['POST'])
-def expense():
+def expense_form():
     token = request.headers.get('token')
     result = request.form['data']
     name = result.name
@@ -133,5 +133,35 @@ def credit():
     if current_user:
         credit = Credit.query.filter_by(ownerId=data['userId']).all()
         return jsonify(credit)
+    else:
+        return jsonify(403, "Sorry, you are not logged in")
+
+
+@app.route('/account', methods=['GET'])
+def account():
+    token = request.headers.get('token')
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
+        current_user = User.query.filter_by(data["userId"]).one()
+    except Exception as e:
+        return e
+    if current_user:
+        account = Accounts.query.filter_by(ownerId=data['userId']).all()
+        return jsonify(account)
+    else:
+        return jsonify(403, "Sorry, you are not logged in")
+
+
+@app.route('/expense', methods=['GET'])
+def expense():
+    token = request.headers.get('token')
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
+        current_user = User.query.filter_by(data["userId"]).one()
+    except Exception as e:
+        return e
+    if current_user:
+        expense = Expenses.query.filter_by(ownerId=data['userId']).all()
+        return jsonify(expense)
     else:
         return jsonify(403, "Sorry, you are not logged in")
