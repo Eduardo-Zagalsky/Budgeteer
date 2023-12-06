@@ -19,13 +19,12 @@ connect_db(app)
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    data = request.form['data']
-    name = data.name
-    email = data.email
-    username = data.username
-    password = data.password
-    income = data.income
-    credit_score = data.credit_score
+    name = request.form['name']
+    email = request.form['email']
+    username = request.form['username']
+    password = request.form['password']
+    income = request.form['income']
+    credit_score = request.form['creditScore']
     if income and credit_score:
         user = User(name=name, email=email, password=User.hash(
             password), income=income, credit_score=credit_score)
@@ -45,9 +44,8 @@ def signup():
 
 @app.route('/logon', methods=['POST'])
 def login():
-    data = request.form['data']
-    username = data.username
-    password = data.password
+    username = request.form['username']
+    password = request.form['password']
     user = User.authenticate(username, password)
     if user:
         auth_token = user.encode_auth_token(user.id)
@@ -57,10 +55,9 @@ def login():
 @app.route('/account-form', methods=['POST'])
 def account_form():
     token = request.headers.get('token')
-    result = request.form['data']
-    name = result.name
-    type = result.type
-    balance = result.balance
+    name = request.form['name']
+    type = request.form['type']
+    balance = request.form['balance']
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
         current_user = User.query.first(data["userId"])
@@ -78,13 +75,12 @@ def account_form():
 @app.route('/credit-form', methods=['POST'])
 def credit_form():
     token = request.headers.get('token')
-    result = request.form['data']
-    creditor = result.creditor
-    type = result.type
-    limit = result.limit
-    balance = result.balance
-    interest_rate = result.interest_rate
-    due_date = result.due_date
+    creditor = request.form['creditor']
+    type = request.form['type']
+    limit = request.form['limit']
+    balance = request.form['balance']
+    interest_rate = request.form['interestRate']
+    due_date = request.form['dueDate']
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
         current_user = User.query.first(data["userId"])
@@ -102,12 +98,11 @@ def credit_form():
 @app.route('/expense-form', methods=['POST'])
 def expense_form():
     token = request.headers.get('token')
-    result = request.form['data']
-    name = result.name
-    type = result.type
-    amount = result.amount
-    description = result.description
-    date = result.date
+    name = request.form['name']
+    type = request.form['type']
+    amount = request.form['amount']
+    description = request.form['description']
+    date = request.form['date']
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
         current_user = User.query.first(data["userId"])
