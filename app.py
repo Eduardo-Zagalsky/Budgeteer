@@ -15,49 +15,45 @@ app.config['CORS_ORIGIN_ALLOW_ALL'] = True
 app.config['SECRET_KEY'] = SECRET_KEY
 
 connect_db(app)
+with app.app_context():
+    db.drop_all()
+    db.create_all()
 
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    name = request.form['name']
-    email = request.form['email']
-    username = request.form['username']
-    password = request.form['password']
-    income = request.form['income']
-    credit_score = request.form['creditScore']
-    if income and credit_score:
-        user = User(name=name, email=email, password=User.hash(
-            password), income=income, credit_score=credit_score)
-    elif income:
-        user = User(name=name, email=email,
-                    password=User.hash(password), income=income)
-    elif credit_score:
-        user = User(name=name, email=email, password=User.hash(
-            password), credit_score=credit_score)
-    else:
-        user = User.register(name, email, username, password)
+    name = request.json['formData']['name']
+    email = request.json['formData']['email']
+    username = request.json['formData']['username']
+    password = request.json['formData']['password']
+    income = request.json['formData']['income']
+    credit_score = request.json['formData']['creditScore']
+    user = User(full_name=name, email=email, username=username, password=User.hash(
+        password), income=income, credit_score=credit_score)
     db.session.add(user)
     db.session.commit()
     auth_token = user.encode_auth_token(user.id)
-    return jsonify(auth_token)
+    return auth_token.decode('UTF-8')
 
 
 @app.route('/logon', methods=['POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
+    username = request.json['formData']['username']
+    password = request.json['formData']['password']
     user = User.authenticate(username, password)
     if user:
         auth_token = user.encode_auth_token(user.id)
-        return jsonify(auth_token)
+        return auth_token.decode('UTF-8')
+    else:
+        return jsonify(403, "Sorry, you are not logged in")
 
 
 @app.route('/account-form', methods=['POST'])
 def account_form():
     token = request.headers.get('token')
-    name = request.form['name']
-    type = request.form['type']
-    balance = request.form['balance']
+    name = request.json['formData']['name']
+    type = request.json['formData']['type']
+    balance = request.json['formData']['balance']
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
         current_user = User.query.first(data["userId"])
@@ -75,12 +71,12 @@ def account_form():
 @app.route('/credit-form', methods=['POST'])
 def credit_form():
     token = request.headers.get('token')
-    creditor = request.form['creditor']
-    type = request.form['type']
-    limit = request.form['limit']
-    balance = request.form['balance']
-    interest_rate = request.form['interestRate']
-    due_date = request.form['dueDate']
+    creditor = request.json['formData']['creditor']
+    type = request.json['formData']['type']
+    limit = request.json['formData']['limit']
+    balance = request.json['formData']['balance']
+    interest_rate = request.json['formData']['interestRate']
+    due_date = request.json['formData']['dueDate']
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
         current_user = User.query.first(data["userId"])
@@ -98,11 +94,11 @@ def credit_form():
 @app.route('/expense-form', methods=['POST'])
 def expense_form():
     token = request.headers.get('token')
-    name = request.form['name']
-    type = request.form['type']
-    amount = request.form['amount']
-    description = request.form['description']
-    date = request.form['date']
+    name = request.json['formData']['name']
+    type = request.json['formData']['type']
+    amount = request.json['formData']['amount']
+    description = request.json['formData']['description']
+    date = request.json['formData']['date']
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
         current_user = User.query.first(data["userId"])
