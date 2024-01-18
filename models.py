@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 import jwt
 import os
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = "hush_its_secret"  # os.getenv('SECRET_KEY')
 ALGORITHMS = 'HS256'
 
 db = SQLAlchemy()
@@ -42,7 +42,7 @@ class User(db.Model):
         hashed_utf8 = hashed.decode("utf8")
 
         # return instance of user w/username and hashed pwd
-        return cls(username=username, password=hashed_utf8, name=name, email=email)
+        return cls(username=username, password=hashed_utf8, full_name=name, email=email)
 
     @classmethod
     def authenticate(cls, username, pwd):
@@ -63,8 +63,9 @@ class User(db.Model):
     def encode_auth_token(self, user_id):
         try:
             u = User.query.filter_by(id=user_id).first()
-            payload = {'userId': u.id, 'name': u.name, 'username': u.username}
-            return jwt.encode(payload, SECRET_KEY, algorithm=[ALGORITHMS])
+            payload = {'userId': u.id, 'name': u.full_name,
+                       'username': u.username}
+            return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHMS)
         except Exception as e:
             return e
 
