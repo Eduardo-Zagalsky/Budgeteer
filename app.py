@@ -3,7 +3,7 @@ from models import db, connect_db, User, Accounts, Credit, Expenses
 import jwt
 import os
 from flask_cors import CORS
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'hush_its_secret'  # os.getenv('SECRET_KEY')
 ALGORITHMS = 'HS256'
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +18,17 @@ connect_db(app)
 with app.app_context():
     db.drop_all()
     db.create_all()
+
+
+def get_user(token):
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=[
+                          ALGORITHMS], verify=False)
+        current_user = User.query.filter_by(id=data["userId"]).first()
+        return current_user
+    except Exception as e:
+        print("Error decoding JWT", e)
+        return "error"
 
 
 @app.route('/signup', methods=['POST'])
@@ -54,11 +65,7 @@ def account_form():
     name = request.json['formData']['name']
     type = request.json['formData']['type']
     balance = request.json['formData']['balance']
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
-        current_user = User.query.first(data["userId"])
-    except Exception as e:
-        return e
+    current_user = get_user(token)
     if current_user:
         account = Accounts(name=name, type=type,
                            balance=balance, ownerId=current_user)
@@ -77,14 +84,10 @@ def credit_form():
     balance = request.json['formData']['balance']
     interest_rate = request.json['formData']['interestRate']
     due_date = request.json['formData']['dueDate']
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
-        current_user = User.query.first(data["userId"])
-    except Exception as e:
-        return e
+    current_user = get_user(token)
     if current_user:
         credit = Credit(creditor=creditor, type=type, limit=limit,
-                        balance=balance, interest_rate=interest_rate, due_date=due_date, ownerId=current_user)
+                        balance=balance, interest_rate=interest_rate, due_date=due_date, ownerId=current_user.id)
         db.session.add(credit)
         db.session.commit()
     else:
@@ -99,11 +102,7 @@ def expense_form():
     amount = request.json['formData']['amount']
     description = request.json['formData']['description']
     date = request.json['formData']['date']
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
-        current_user = User.query.first(data["userId"])
-    except Exception as e:
-        return e
+    current_user = get_user(token)
     if current_user:
         expense = Expenses(name=name, type=type, amount=amount,
                            description=description, date=date, ownerId=current_user)
@@ -116,13 +115,9 @@ def expense_form():
 @app.route('/credit', methods=['GET'])
 def credit():
     token = request.headers.get('token')
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
-        current_user = User.query.filter_by(data["userId"]).one()
-    except Exception as e:
-        return e
+    current_user = get_user(token)
     if current_user:
-        credit = Credit.query.filter_by(ownerId=data['userId']).all()
+        credit = Credit.query.filter_by(ownerId=current_user['userId']).all()
         return jsonify(credit)
     else:
         return jsonify(403, "Sorry, you are not logged in")
@@ -131,13 +126,10 @@ def credit():
 @app.route('/account', methods=['GET'])
 def account():
     token = request.headers.get('token')
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
-        current_user = User.query.filter_by(data["userId"]).one()
-    except Exception as e:
-        return e
+    current_user = get_user(token)
     if current_user:
-        account = Accounts.query.filter_by(ownerId=data['userId']).all()
+        account = Accounts.query.filter_by(
+            ownerId=current_user['userId']).all()
         return jsonify(account)
     else:
         return jsonify(403, "Sorry, you are not logged in")
@@ -146,13 +138,10 @@ def account():
 @app.route('/expense', methods=['GET'])
 def expense():
     token = request.headers.get('token')
-    try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHMS])
-        current_user = User.query.filter_by(data["userId"]).one()
-    except Exception as e:
-        return e
+    current_user = get_user(token)
     if current_user:
-        expense = Expenses.query.filter_by(ownerId=data['userId']).all()
+        expense = Expenses.query.filter_by(
+            ownerId=current_user['userId']).all()
         return jsonify(expense)
     else:
         return jsonify(403, "Sorry, you are not logged in")
