@@ -15,20 +15,28 @@ app.config['CORS_ORIGIN_ALLOW_ALL'] = True
 app.config['SECRET_KEY'] = SECRET_KEY
 
 connect_db(app)
-with app.app_context():
-    db.drop_all()
-    db.create_all()
+# with app.app_context():
+#     db.drop_all()
+#     db.create_all()
 
 
 def get_user(token):
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=[
                           ALGORITHMS], verify=False)
-        current_user = User.query.filter_by(id=data["userId"]).first()
+        resp = User.query.filter_by(id=data["userId"]).first()
+        current_user = {"userId": resp.id,
+                        "full_name": resp.full_name, "username": resp.username}
         return current_user
     except Exception as e:
         print("Error decoding JWT", e)
         return "error"
+
+
+@app.route('/', methods=['GET'])
+def homepage():
+    """Home page route."""
+    return jsonify(get_user(request.headers.get('token')))
 
 
 @app.route('/signup', methods=['POST'])
@@ -66,11 +74,13 @@ def account_form():
     type = request.json['formData']['type']
     balance = request.json['formData']['balance']
     current_user = get_user(token)
+    print(current_user)
     if current_user:
         account = Accounts(name=name, type=type,
-                           balance=balance, ownerId=current_user)
+                           balance=balance, ownerId=current_user['userId'])
         db.session.add(account)
         db.session.commit()
+        return jsonify(200, 'Account added successfully!')
     else:
         return jsonify(403, "Sorry, you are not logged in")
 
@@ -85,11 +95,14 @@ def credit_form():
     interest_rate = request.json['formData']['interestRate']
     due_date = request.json['formData']['dueDate']
     current_user = get_user(token)
+    print(token)
+    print(current_user)
     if current_user:
         credit = Credit(creditor=creditor, type=type, limit=limit,
-                        balance=balance, interest_rate=interest_rate, due_date=due_date, ownerId=current_user.id)
+                        balance=balance, interest_rate=interest_rate, due_date=due_date, ownerId=current_user['userId'])
         db.session.add(credit)
         db.session.commit()
+        return jsonify(200, 'Credit added successfully!')
     else:
         return jsonify(403, "Sorry, you are not logged in")
 
@@ -104,10 +117,11 @@ def expense_form():
     date = request.json['formData']['date']
     current_user = get_user(token)
     if current_user:
-        expense = Expenses(name=name, type=type, amount=amount,
-                           description=description, date=date, ownerId=current_user)
+        expense = Expenses(name=name, expenseType=type, amount=amount,
+                           description=description, date=date, ownerId=current_user['userId'])
         db.session.add(expense)
         db.session.commit()
+        return jsonify(200, 'Expense added successfully!')
     else:
         return jsonify(403, "Sorry, you are not logged in")
 
@@ -140,8 +154,21 @@ def expense():
     token = request.headers.get('token')
     current_user = get_user(token)
     if current_user:
-        expense = Expenses.query.filter_by(
+        print("*******************************************************")
+        print(current_user, current_user['userId'])
+        print("*******************************************************")
+        resp = Expenses.query.filter_by(
             ownerId=current_user['userId']).all()
-        return jsonify(expense)
+        print("*******************************************************")
+        print(resp)
+        print("*******************************************************")
+        expenses=[]
+        for x in resp:
+            item = {"name": x.name, "amount": x.amount}
+            expenses.append(item)
+        print("*******************************************************")
+        print(expenses)
+        print("*******************************************************")
+        return jsonify(expenses)
     else:
         return jsonify(403, "Sorry, you are not logged in")
