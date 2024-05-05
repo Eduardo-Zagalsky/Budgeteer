@@ -131,7 +131,21 @@ def credit():
     token = request.headers.get('token')
     current_user = get_user(token)
     if current_user:
-        credit = Credit.query.filter_by(ownerId=current_user['userId']).all()
+        print("*******************************************************")
+        print(current_user, current_user['userId'])
+        print("*******************************************************")
+        resp = Credit.query.filter_by(ownerId=current_user['userId']).all()
+        print("*******************************************************")
+        print(resp)
+        print("*******************************************************")
+        credit = []
+        for x in resp:
+            item = {"name": current_user['full_name'], "account": x.id, "creditor": x.creditor, "type": x.type, "balance":
+                    x.balance, "limit": x.limit, "interest_rate": x.interest_rate, "due_date": x.due_date}
+            credit.append(item)
+        print("*******************************************************")
+        print(credit)
+        print("*******************************************************")
         return jsonify(credit)
     else:
         return jsonify(403, "Sorry, you are not logged in")
@@ -154,21 +168,12 @@ def expense():
     token = request.headers.get('token')
     current_user = get_user(token)
     if current_user:
-        print("*******************************************************")
-        print(current_user, current_user['userId'])
-        print("*******************************************************")
         resp = Expenses.query.filter_by(
             ownerId=current_user['userId']).all()
-        print("*******************************************************")
-        print(resp)
-        print("*******************************************************")
-        expenses=[]
+        expenses = []
         for x in resp:
             item = {"name": x.name, "amount": x.amount}
             expenses.append(item)
-        print("*******************************************************")
-        print(expenses)
-        print("*******************************************************")
         return jsonify(expenses)
     else:
         return jsonify(403, "Sorry, you are not logged in")
