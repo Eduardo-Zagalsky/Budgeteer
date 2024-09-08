@@ -26,7 +26,7 @@ def get_user(token):
                           ALGORITHMS], verify=False)
         resp = User.query.filter_by(id=data["userId"]).first()
         current_user = {"userId": resp.id,
-                        "full_name": resp.full_name, "username": resp.username}
+                        "full_name": resp.full_name, "username": resp.username, "income": resp.income}
         return current_user
     except Exception as e:
         print("Error decoding JWT", e)
@@ -196,14 +196,20 @@ def account():
 def expense():
     token = request.headers.get('token')
     current_user = get_user(token)
+    info = []
     if current_user:
+        info.append(current_user['income'])
         resp = Expenses.query.filter_by(
             ownerId=current_user['userId']).all()
         expenses = []
+        sum = 0
         for x in resp:
+            sum += x.amount
             item = {"name": x.name, "type": x.expenseType, "amount": x.amount,
                     "description": x.description, "date": x.date}
             expenses.append(item)
-        return jsonify(expenses)
+        info.append(expenses)
+        info.append(sum)
+        return jsonify(info)
     else:
         return jsonify({"error": "Sorry, you are not logged in"}), 403
