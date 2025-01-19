@@ -98,7 +98,7 @@ class Expenses(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
-    expenseType = db.Column(db.Text)
+    type = db.Column(db.Text)
     amount = db.Column(db.Float, nullable=False)
     description = db.Column(db.Text)
     date = db.Column(db.Date, nullable=False)
