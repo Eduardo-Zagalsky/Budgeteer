@@ -1,6 +1,6 @@
 from unittest import TestCase
 from app import app
-from models import db, User
+from models import db, User, Accounts, Credit, Expenses
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///test_budgeteer'
 app.config['SQLALCHEMY_ECHO'] = False
@@ -14,7 +14,7 @@ class FormTest(TestCase):
     def setUp(self):
         db.session.query(User).delete()
         self.testuser = User.register(
-            full_name="Test", email="test@test.com", username="testuser", password="testuser")
+            name="Test", email="test@test.com", username="testuser", pwd="testuser")
         db.session.add(self.testuser)
         db.session.commit()
 
@@ -43,5 +43,46 @@ class FormTest(TestCase):
             print(resp.get_data(as_text=True))
             # test login for existing user
             user = User.query.filter_by(username="testuser").first()
-            print(user)
             self.assertEqual(user.full_name, "Test")
+
+    def test_fail_signup(self):
+        with app.test_client() as client:
+            # testing adding an existing user
+            resp = client.post("/signup", data={"full_name": "Jane Doe", "email": "janedoe@email.com",
+                                                "username": "JaneDoe", "password": "password"})
+            self.assertEqual(resp.status_code, 400)
+
+    def test_account(self):
+        with app.test_client() as client:
+            # add account info
+            resp = client.post(
+                "/account-form", data={"name": "Test Bank", "type": "checking", "balance": "2000"})
+            # get the first checking account
+            account = Accounts.query.filter_by(type="checking").first()
+            # test
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(account.name, "Test Bank")
+
+    def test_credit(self):
+        with app.test_client() as client:
+            # add credit info
+            resp = client.post("/credit-form", data={"creditor": "Test Bank", "type": "credit card",
+                               "limit": "2000", "balance": "1000", "interest_rate": "20", "due_date": "01/01/2025"})
+            # get the first credit card
+            credit = Credit.query.filter_by(type="credit card").first()
+            # test
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(credit.limit, 2000)
+            self.assertEqual(credit.balance, 1000)
+
+    def test_expense(self):
+        with app.test_client() as client:
+            # add expense info
+            resp = client.post("/expense-form", data={"name": "Test Properties", "type": "rent",
+                               "amount": "1000", "description": "rent payment", "date": "01/01/2025"})
+            # get the first expense
+            expense = Expenses.query.filter_by(type="rent").first()
+            # test
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(expense.name, "Test Properties")
+            self.assertEqual(expense.amount, 1000)
