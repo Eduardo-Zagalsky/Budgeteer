@@ -1,6 +1,9 @@
 from unittest import TestCase
 from app import app
 from models import db, User, Accounts, Credit, Expenses
+import jwt
+SECRET_KEY = 'hush_its_secret'
+ALGORITHMS = 'HS256'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///test_budgeteer'
 app.config['SQLALCHEMY_ECHO'] = False
@@ -17,6 +20,8 @@ class FormTest(TestCase):
             name="Test", email="test@test.com", username="testuser", pwd="testuser")
         db.session.add(self.testuser)
         db.session.commit()
+        self.token = self.testuser.encode_auth_token(
+            self.testuser.id).decode('UTF-8')
 
     def test_user(self):
         user = User(full_name="John Smith", email="johnsmith@email.com",
@@ -29,8 +34,10 @@ class FormTest(TestCase):
     def test_signup(self):
         with app.test_client() as client:
             # testing adding a new user
-            resp = client.post("/signup", data={"full_name": "Jane Doe", "email": "janedoe@email.com",
-                                                "username": "JaneDoe", "password": "password"})
+            json = {"formData": {"name": "Jane Doe", "email": "janedoe@email.com",
+                                 "username": "JaneDoe", "password": "password", "income": "50000", "creditScore": "700"}}
+            resp = client.post("/signup", json=json,
+                               headers={"Content-Type": "application/json"})
             # test signup for new user
             user = User.query.filter_by(email="janedoe@email.com").first()
             self.assertEqual(user.full_name, "Jane Doe")
@@ -55,8 +62,10 @@ class FormTest(TestCase):
     def test_account(self):
         with app.test_client() as client:
             # add account info
+            json = {"formData": {"name": "Test Bank",
+                                 "type": "checking", "balance": "2000"}}
             resp = client.post(
-                "/account-form", data={"name": "Test Bank", "type": "checking", "balance": "2000"})
+                "/account-form", json=json, headers={"token": self.token, "Content-Type": "application/json"})
             # get the first checking account
             account = Accounts.query.filter_by(type="checking").first()
             # test
@@ -66,8 +75,10 @@ class FormTest(TestCase):
     def test_credit(self):
         with app.test_client() as client:
             # add credit info
-            resp = client.post("/credit-form", data={"creditor": "Test Bank", "type": "credit card",
-                               "limit": "2000", "balance": "1000", "interest_rate": "20", "due_date": "01/01/2025"})
+            json = {"formData": {"creditor": "Test Bank", "type": "credit card",
+                                 "limit": "2000", "balance": "1000", "interestRate": "20", "dueDate": "01/01/2025"}}
+            resp = client.post("/credit-form", json=json,
+                               headers={"token": self.token, "Content-Type": "application/json"})
             # get the first credit card
             credit = Credit.query.filter_by(type="credit card").first()
             # test
@@ -78,8 +89,10 @@ class FormTest(TestCase):
     def test_expense(self):
         with app.test_client() as client:
             # add expense info
-            resp = client.post("/expense-form", data={"name": "Test Properties", "type": "rent",
-                               "amount": "1000", "description": "rent payment", "date": "01/01/2025"})
+            json = {"formData": {"name": "Test Properties", "type": "rent",
+                                 "amount": "1000", "description": "rent payment", "date": "01/01/2025"}}
+            resp = client.post(
+                "/expense-form", json=json, headers={"token": self.token, "Content-Type": "application/json"})
             # get the first expense
             expense = Expenses.query.filter_by(type="rent").first()
             # test
