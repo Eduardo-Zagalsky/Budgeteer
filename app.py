@@ -50,7 +50,7 @@ def homepage():
             ownerId=current_user['userId']).all()
         expenses = []
         for x in resp:
-            item = {"name": x.name, "type": x.expenseType, "amount": x.amount,
+            item = {"name": x.name, "type": x.type, "amount": x.amount,
                     "description": x.description, "date": x.date}
             expenses.append(item)
         info.append(expenses)
@@ -151,7 +151,7 @@ def expense_form():
     date = request.json['formData']['date']
     current_user = get_user(token)
     if current_user:
-        expense = Expenses(name=name, expenseType=type, amount=amount,
+        expense = Expenses(name=name, type=type, amount=amount,
                            description=description, date=date, ownerId=current_user['userId'])
         db.session.add(expense)
         db.session.commit()
@@ -205,7 +205,7 @@ def expense():
         sum = 0
         for x in resp:
             sum += x.amount
-            item = {"name": x.name, "type": x.expenseType, "amount": x.amount,
+            item = {"name": x.name, "type": x.type, "amount": x.amount,
                     "description": x.description, "date": x.date}
             expenses.append(item)
         info.append(expenses)
